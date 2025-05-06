@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 use App\Models\User;
+use App\Models\ServiceType;
 
 class AuthController extends Controller
 {
@@ -36,10 +38,25 @@ class AuthController extends Controller
         //return $user->createToken($request->device_name)->plainTextToken;
     }
 
-    public function logout() {
-        dd(auth()->user());
-        //auth()->user()->tokens()->where('id', $tokenId)->delete();
+    public function logout(Request $request) {
         auth()->user()->tokens()->delete();
         return ['message' => 'has cerrdo sesion en todos tus dispositivos'];
+    }
+
+    public function registerService(Request $request) {
+        $fields= $request->validate([
+            'name' => 'required|string',
+        ]);
+
+        $service = ServiceType::create([
+            'name' => $fields['name'],
+        ]);
+
+        $response = [
+            'message' => 'registro exitoso',
+            'type service' => $service,
+        ];
+
+        return response($response, 201);
     }
 }
